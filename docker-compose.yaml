@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  djangoUsers:
+    image: restapiusers:1.0.0
+    build: RestApiUsers
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - dbUsers
+  djangoProducts:
+    image: restapiproducts:1.0.0
+    build: RestApiProducts
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - dbProducts
+  dbUsers:
+    build: RestApiUsers/postgresqlusers
+    image: restapi_postgresqlusers:1.0.0
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+  dbProducts:
+    build: RestApiProducts/postgresqlproducts
+    image: restapi_postgresqlproducts:1.0.0
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+  pgadmin:
+    build: pgadmin
+    image: restapi_pgadmin:1.0.0
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "84:80"
+  proxy:
+    build: proxy
+    image: restapiproxy_image:1.0.0
+    ports:
+      - "85:80"
+  

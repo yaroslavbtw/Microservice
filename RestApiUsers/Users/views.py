@@ -2,7 +2,7 @@ from django.contrib import auth
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.response import Response
 import jwt
 from django.conf import settings
@@ -31,8 +31,10 @@ class MeView(views.APIView):
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms="HS256")
 
         user_data = User.objects.filter(username=payload['username']).values()[0]
-
-        serializer = UserViewSerializer(data=user_data)
+        if 'Products' in request.headers:
+            serializer = UserViewToAdminSerializer(data=user_data)
+        else:
+            serializer = UserViewSerializer(data=user_data)
         serializer.is_valid()
         return Response(serializer.data, status=status.HTTP_200_OK)
 

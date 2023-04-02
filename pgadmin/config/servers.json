@@ -1,0 +1,22 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "RestAPIUsers Server",
+      "Group": "Server Group 1",
+      "Port": 5432,
+      "Username": "root",
+      "Host": "dbUsers",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    },
+    "2": {
+      "Name": "RestAPIProducts Server",
+      "Group": "Server Group 1",
+      "Port": 5432,
+      "Username": "root",
+      "Host": "dbProducts",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    }
+  }
+}
