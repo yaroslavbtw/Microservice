@@ -13,6 +13,7 @@ from rest_framework import viewsets, status, views, authentication
 from rest_framework import permissions
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from .tasks import send_email_task
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -55,12 +56,16 @@ class RegisterView(GenericAPIView):
             link = reverse('verification', kwargs={'uuid64': uuid64, 'token': confirm_generator.make_token(user)})
             activate_url = 'http://' + domain + link
 
-            send_mail('Confirm Registration', 'You have successfully registered. '
+            # send_mail('Confirm Registration', 'You have successfully registered. '
+            #                                   'We are very happy to welcome you to our community.'
+            #                                   'To complete your registration, please follow this link.\n'
+            #           + activate_url,
+            #           settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+            send_email_task.delay('Confirm Registration', 'You have successfully registered. '
                                               'We are very happy to welcome you to our community.'
                                               'To complete your registration, please follow this link.\n'
-                      + activate_url,
-                      settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
-
+                                  + activate_url, settings.EMAIL_HOST_USER, [user.email])
             return Response({'user': serializer.data, 'message': 'Check your email and confirm registration'},
                             status=status.HTTP_201_CREATED)
 
